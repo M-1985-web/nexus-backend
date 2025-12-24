@@ -21,6 +21,8 @@ export class AuthService {
       message: 'Talento procesado con éxito en el protocolo Nexus',
       user: { email, hashedPassword }
     };
+
+    
   }
 
 
