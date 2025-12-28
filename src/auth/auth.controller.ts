@@ -1,8 +1,9 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, HttpCode, HttpStatus } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { CreateAuthDto } from './dto/create-auth.dto';
 import { UpdateAuthDto } from './dto/update-auth.dto';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
+import { LoginAuthDto } from './dto/login-auth.dto'; // Importación correcta del DTO
 
 @ApiTags('auth')
 @Controller('auth')
@@ -12,8 +13,17 @@ export class AuthController {
   @Post('register')
   @ApiOperation({ summary: 'Registrar nuevo talento con hashing de seguridad' })
   register(@Body() createAuthDto: CreateAuthDto) {
-    // Usamos el método register que tiene la lógica de Bcrypt
     return this.authService.register(createAuthDto);
+  }
+
+  // NUEVO: Ruta de Login para el Protocolo Nexus
+  @HttpCode(HttpStatus.OK)
+  @Post('login')
+  @ApiOperation({ summary: 'Iniciar sesión y obtener Token de acceso (JWT)' })
+  // MODIFICADO: Cambiamos 'any' por 'LoginAuthDto' para que Swagger muestre el Request Body
+  async login(@Body() loginDto: LoginAuthDto) { 
+    // Ahora Swagger reconocerá loginDto.email y loginDto.password gracias al DTO
+    return this.authService.login(loginDto.email, loginDto.password);
   }
 
   @Get()
@@ -25,7 +35,9 @@ export class AuthController {
   @Get(':id')
   @ApiOperation({ summary: 'Obtener un talento por ID' })
   findOne(@Param('id') id: string) {
-    return this.authService.findOne(+id);
+    // Nota: Si usas IDs de MongoDB, el '+' (conversión a número) podría fallar. 
+    // Si tu findOne acepta string, quita el '+'.
+    return this.authService.findOne(+id); 
   }
 
   @Patch(':id')
