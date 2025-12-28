@@ -1,23 +1,38 @@
-//typeScript
-
-import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config'; // Asegúrate de haber hecho: npm install @nestjs/config
+import { Module, OnModuleInit } from '@nestjs/common';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
-    ConfigModule.forRoot(), // Esto le dice a Nest que busque el archivo .env
-    MongooseModule.forRoot(process.env.MONGO_URI || ''), AuthModule, // Esto usa la variable que creamos
-    //Esto le asegura a NestJS que siempre recibirá al menos un texto vacío si falla la carga del archivo .env.
+    ConfigModule.forRoot({
+      isGlobal: true, 
+    }),
 
-    // Aquí se agregarán los módulos de la aplicación (AuthModule, PruebasModule, etc.)
+    MongooseModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => {
+        const uri = configService.get<string>('MONGO_URI');
+        
+        // LOG DE SEGURIDAD: Esto imprimirá en tu terminal la ruta que está usando
+        console.log('--- INTENTO DE CONEXIÓN NEXUS ---');
+        console.log('URI Detectada:', uri ? 'CARGADA CORRECTAMENTE' : 'ERROR: URI VACÍA');
+        console.log('---------------------------------');
+
+        return {
+          uri: uri,
+          // Forzamos el nombre de la DB aquí para evitar que se pierda en el limbo
+          dbName: 'nexusdb', 
+        };
+      },
+    }),
+
+    AuthModule,
   ],
-
-  controllers: [],
-
-  providers: [],
-
 })
-
-export class AppModule {}
+export class AppModule implements OnModuleInit {
+  onModuleInit() {
+    console.log('🚀 Protocolo Nexus: Módulo Principal Inicializado');
+  }
+}

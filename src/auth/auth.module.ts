@@ -12,7 +12,9 @@ import { Talento, TalentoSchema } from '../talento/schemas/talento.schema';
   controllers: [AuthController],
   providers: [AuthService],
 })
-export class AuthModule {}
+export class AuthModule { }
+
+
 /*
 import { Module } from '@nestjs/common';
 import { AuthService } from './auth.service';
