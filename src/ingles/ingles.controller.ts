@@ -28,14 +28,13 @@ export class InglesController {
     return question;
   }
 
-  // --- NUEVO ENDPOINT: Validar respuesta ---
   @Post('answer')
   @ApiOperation({ summary: 'Valida la respuesta del usuario para una pregunta' })
   @ApiBody({ 
     schema: { 
       type: 'object', 
       properties: { 
-        questionId: { type: 'string', example: '65e1...' }, 
+        questionId: { type: 'string', example: '6776e6a88b5066601b50030d' }, 
         userAnswer: { type: 'string', example: 'am' } 
       } 
     } 
@@ -44,7 +43,31 @@ export class InglesController {
     @Body('questionId') questionId: string,
     @Body('userAnswer') userAnswer: string
   ) {
-    // Llama a la función del servicio que corregimos anteriormente
     return this.inglesService.checkAnswer(questionId, userAnswer);
+  }
+
+  // --- CAMBIO PRINCIPAL: Se agregó ApiBody para habilitar el cuadro de texto en Swagger ---
+  @Post('finish')
+  @ApiOperation({ summary: 'Finaliza el test y calcula el nivel final' })
+  @ApiBody({ 
+    schema: { 
+      type: 'object', 
+      properties: { 
+        talentoId: { type: 'string', example: '12345' }, 
+        respuestasCorrectas: { type: 'number', example: 4 }, 
+        totalPreguntas: { type: 'number', example: 5 } 
+      } 
+    } 
+  })
+  async finishTest(@Body() data: { talentoId: string, respuestasCorrectas: number, totalPreguntas: number }) {
+    // Se corrigió el nombre de la propiedad 'totalPreguntas' que estaba truncado
+    return this.inglesService.calculateFinalResult(data);
+  }
+
+  @Get('result/:talentoId')
+  @ApiOperation({ summary: 'Obtiene el último resultado guardado de un talento' })
+  async getResult(@Param('talentoId') talentoId: string) {
+    // Llama a la función que agregamos al servicio para limpiar el error TS
+    return this.inglesService.getStoredResult(talentoId);
   }
 }
