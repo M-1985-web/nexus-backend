@@ -26,4 +26,5 @@ import { Talento, TalentoSchema } from '../talento/schemas/talento.schema';
   // Exportamos el servicio para que otros módulos (como Talento) puedan usar sus funciones
   exports: [InglesService] 
 })
-export class InglesModule {}
+export class InglesModule { }
+

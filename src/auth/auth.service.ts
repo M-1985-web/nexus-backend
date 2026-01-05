@@ -31,42 +31,44 @@ export class AuthService {
     return await nuevoTalento.save();
   }
 
-  // --- NUEVO MÉTODO: LOGIN ---
+  // --- MÉTODO: LOGIN CORREGIDO ---
   async login(email: string, pass: string) {
-    // 1. Buscamos el talento en Atlas por email
     const talento = await this.talentoModel.findOne({ email });
 
-    // 2. Si no existe, lanzamos error de seguridad
     if (!talento) {
       throw new UnauthorizedException('Credenciales no válidas en Nexus');
     }
 
-    // 3. Comparamos contraseña plana vs encriptada (bcrypt)
     const isMatch = await bcrypt.compare(pass, talento.password);
 
     if (!isMatch) {
       throw new UnauthorizedException('Credenciales no válidas en Nexus');
     }
 
-    // 4. Generamos el Token de acceso si todo es correcto
     const payload = { sub: talento._id, email: talento.email };
-    
+
+    // MODIFICADO: Devolvemos talentoId directamente para que el Frontend lo capture fácil
     return {
       access_token: await this.jwtService.signAsync(payload),
-      user: {
-        id: talento._id,
-        email: talento.email
-      }
+      talentoId: talento._id, // Esto es lo que el frontend busca específicamente
+      email: talento.email
     };
   }
 
   // Métodos secundarios (se puede dejar o borrar pero de momento los dejo)
   findAll() { return `This action returns all auth`; }
-  findOne(id: number) { return `This action returns a #${id} auth`; }
-  update(id: number, updateAuthDto: UpdateAuthDto) {
-    return `This action updates a #${id} auth`;
+  // Cambia number por string en estos métodos:
+  findOne(id: string) {
+    return this.talentoModel.findById(id);
   }
-  remove(id: number) { return `This action removes a #${id} auth`; }
+
+  update(id: string, updateAuthDto: UpdateAuthDto) {
+    return this.talentoModel.findByIdAndUpdate(id, updateAuthDto, { new: true });
+  }
+
+  remove(id: string) {
+    return this.talentoModel.findByIdAndDelete(id);
+  }
 
   
 }

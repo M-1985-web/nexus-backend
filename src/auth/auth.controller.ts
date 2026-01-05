@@ -37,18 +37,19 @@ export class AuthController {
   findOne(@Param('id') id: string) {
     // Nota: Si usas IDs de MongoDB, el '+' (conversión a número) podría fallar. 
     // Si tu findOne acepta string, quita el '+'.
-    return this.authService.findOne(+id); 
+    return this.authService.findOne(id); 
   }
+  
 
   @Patch(':id')
   @ApiOperation({ summary: 'Actualizar datos de un talento' })
   update(@Param('id') id: string, @Body() updateAuthDto: UpdateAuthDto) {
-    return this.authService.update(+id, updateAuthDto);
+    return this.authService.update(id, updateAuthDto);
   }
 
   @Delete(':id')
   @ApiOperation({ summary: 'Eliminar un talento del protocolo' })
   remove(@Param('id') id: string) {
-    return this.authService.remove(+id);
+    return this.authService.remove(id);
   }
 }
