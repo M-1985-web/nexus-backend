@@ -3,6 +3,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AuthModule } from './auth/auth.module';
 import { InglesModule } from './ingles/ingles.module';
+import { ComunicacionModule } from './comunicacion/comunicacion.module';
 
 @Module({
   imports: [
@@ -32,6 +33,8 @@ import { InglesModule } from './ingles/ingles.module';
     AuthModule,
 
     InglesModule,
+
+    ComunicacionModule,
   ],
 })
 export class AppModule implements OnModuleInit {
